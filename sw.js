@@ -8,66 +8,134 @@ const APP_FILES = [
 ];
 
 self.addEventListener('install', event => {
+
   self.skipWaiting();
 
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(APP_FILES);
-    })
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(APP_FILES))
   );
+
 });
 
+
 self.addEventListener('activate', event => {
+
   event.waitUntil(
+
     caches.keys().then(keys => {
+
       return Promise.all(
+
         keys
           .filter(key => key !== CACHE_NAME)
           .map(key => caches.delete(key))
+
       );
-    }).then(() => self.clients.claim())
+
+    }).then(() => {
+
+      return self.clients.claim();
+
+    })
+
   );
+
 });
 
+
 self.addEventListener('fetch', event => {
+
   const request = event.request;
 
-  // HTML 页面永远优先从网络取得最新版本
+
+  /*
+   HTML 永远优先网络
+   避免 GitHub Pages 使用旧版本
+  */
+
   if (
     request.mode === 'navigate' ||
     request.url.endsWith('.html')
-  ) {
+  ){
+
     event.respondWith(
-      fetch(request, { cache: 'no-store' })
-        .then(response => {
-          const copy = response.clone();
 
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(request, copy);
-          });
+      fetch(
+        request,
+        {
+          cache:'no-store'
+        }
+      )
 
-          return response;
-        })
-        .catch(() => {
-          return caches.match(request);
-        })
-    );
-
-    return;
-  }
-
-  // 其他资源：网络优先，网络失败才使用缓存
-  event.respondWith(
-    fetch(request)
       .then(response => {
-        const copy = response.clone();
 
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(request, copy);
+        const copy =
+          response.clone();
+
+        caches.open(
+          CACHE_NAME
+        ).then(cache => {
+
+          cache.put(
+            request,
+            copy
+          );
+
         });
 
         return response;
+
       })
-      .catch(() => caches.match(request))
+
+      .catch(() => {
+
+        return caches.match(
+          request
+        );
+
+      })
+
+    );
+
+    return;
+
+  }
+
+
+  /*
+   其他资源：
+   网络优先
+  */
+
+  event.respondWith(
+
+    fetch(request)
+
+      .then(response => {
+
+        const copy =
+          response.clone();
+
+        caches.open(
+          CACHE_NAME
+        ).then(cache => {
+
+          cache.put(
+            request,
+            copy
+          );
+
+        });
+
+        return response;
+
+      })
+
+      .catch(() =>
+        caches.match(request)
+      )
+
   );
+
 });
