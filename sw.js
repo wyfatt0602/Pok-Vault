@@ -1,47 +1,73 @@
-const CACHE='pokevault-v16';
+const CACHE_NAME = 'pokevault-v15';
 
-const ASSETS=[
+const APP_FILES = [
   './',
-  './index.html',
+  './Pokemon_Card_Manager.html',
   './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+  './sw.js'
 ];
 
-self.addEventListener('install',e =>
-  e.waitUntil(
-    caches.open(CACHE)
-      .then(c => c.addAll(ASSETS))
-      .then(() => self.skipWaiting())
-  )
-);
+self.addEventListener('install', event => {
+  self.skipWaiting();
 
-self.addEventListener('activate',e =>
-  e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(APP_FILES);
+    })
+  );
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(
         keys
-          .filter(k => k !== CACHE)
-          .map(k => caches.delete(k))
-      )
-    ).then(() => self.clients.claim())
-  )
-);
+          .filter(key => key !== CACHE_NAME)
+          .map(key => caches.delete(key))
+      );
+    }).then(() => self.clients.claim())
+  );
+});
 
-self.addEventListener('fetch',e => {
-  if(e.request.method !== 'GET') return;
+self.addEventListener('fetch', event => {
+  const request = event.request;
 
-  e.respondWith(
-    caches.match(e.request)
-      .then(r =>
-        r ||
-        fetch(e.request)
-          .then(res => {
-            const copy = res.clone();
-            caches.open(CACHE).then(c => c.put(e.request, copy));
-            return res;
-          })
-          .catch(() => caches.match('./index.html'))
-      )
+  // HTML 页面永远优先从网络取得最新版本
+  if (
+    request.mode === 'navigate' ||
+    request.url.endsWith('.html')
+  ) {
+    event.respondWith(
+      fetch(request, { cache: 'no-store' })
+        .then(response => {
+          const copy = response.clone();
+
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(request, copy);
+          });
+
+          return response;
+        })
+        .catch(() => {
+          return caches.match(request);
+        })
+    );
+
+    return;
+  }
+
+  // 其他资源：网络优先，网络失败才使用缓存
+  event.respondWith(
+    fetch(request)
+      .then(response => {
+        const copy = response.clone();
+
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(request, copy);
+        });
+
+        return response;
+      })
+      .catch(() => caches.match(request))
   );
 });
