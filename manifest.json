@@ -2,7 +2,7 @@
   "name": "PokéVault Card Manager Cloud",
   "short_name": "PokéVault",
   "description": "Pokémon Card Asset Manager",
-  "start_url": "./Pokemon_Card_Manager.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#070a10",
