@@ -1,175 +1,4146 @@
 <!doctype html>
 <html lang="zh-CN">
+
 <head>
+
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1,viewport-fit=cover">
+
 <meta name="theme-color" content="#080b12">
+
 <link rel="manifest" href="manifest.json">
+
 <title>PokéVault</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-:root{--bg:#070a10;--panel:#101722;--panel2:#151e2b;--line:#283447;--text:#f2f5fa;--muted:#8d99ab;--blue:#7182ff;--purple:#8b5cf6;--green:#34d399;--red:#fb7185;--gold:#fbbf24}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 20% -10%,#1a2440 0,#070a10 38%);color:var(--text);font:14px Inter,Arial,"Microsoft YaHei",sans-serif}
-button,input,select,textarea{font:inherit}button{cursor:pointer}
-.app{min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:250px;background:#0a0f17f2;border-right:1px solid var(--line);padding:18px;z-index:20;display:flex;flex-direction:column}.brand{display:flex;align-items:center;gap:11px;padding:4px 5px 20px;border-bottom:1px solid #202a39}.logo{width:42px;height:42px;border-radius:13px;overflow:hidden;background:linear-gradient(135deg,var(--blue),var(--purple));display:grid;place-items:center;font-size:22px}.logo img{width:100%;height:100%;object-fit:cover}.brand b{font-size:18px}.brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:1px;margin-top:2px}
-.nav{padding:18px 0}.nav button,.sideBtn{width:100%;border:1px solid transparent;background:transparent;color:#b5bfd0;border-radius:10px;padding:11px;text-align:left;margin:3px 0;font-weight:700}.nav button.active,.nav button:hover{background:#151f2f;border-color:#2b3950;color:white}.sideTitle{font-size:9px;color:#667389;letter-spacing:1.2px;font-weight:800;margin:16px 6px 7px}.sideSearch{position:relative}.sideSearch span{position:absolute;left:10px;top:9px;color:#758198}.sideSearch input{width:100%;padding:10px 10px 10px 30px}.sideBtn.primary{background:linear-gradient(135deg,var(--blue),var(--purple));color:white;text-align:center;border:0}.sideBtn{background:#111a27;border-color:#273448;text-align:center}.catList{overflow:auto;max-height:30vh}.catItem{display:flex;justify-content:space-between;align-items:center;padding:9px;border-radius:9px;color:#aeb8c9;cursor:pointer}.catItem:hover,.catItem.active{background:#151f2f;color:#fff}.catItem em{font-style:normal;color:#69768a;font-size:11px}.sideBottom{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.main{margin-left:250px}.top{position:sticky;top:0;z-index:10;height:66px;background:#080c13e8;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 26px}.top h1{font-size:18px;margin:0}.top p{margin:3px 0 0;color:var(--muted);font-size:11px}.topActions{display:flex;gap:8px}.btn{border:1px solid #303d52;background:#131c29;color:#dce4ef;border-radius:9px;padding:9px 12px;font-weight:700}.btn.primary{border:0;background:linear-gradient(135deg,var(--blue),var(--purple));color:white}.content{padding:24px;max-width:1500px;margin:auto}.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}.stat{background:#101722e8;border:1px solid var(--line);border-radius:14px;padding:15px}.stat label{display:block;color:var(--muted);font-size:11px}.stat strong{display:block;font-size:20px;margin-top:8px}.stat small{color:var(--muted);font-size:10px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}.catCard{background:#0e151fe8;border:1px solid var(--line);border-radius:14px;padding:15px;cursor:pointer}.catCard:hover{border-color:#4b5f87;transform:translateY(-1px)}.catCard b{font-size:15px}.catCard div{color:var(--muted);font-size:11px;margin-top:7px}.catCard strong{font-size:17px;display:block;margin-top:7px}.positive{color:var(--green)!important}.negative{color:var(--red)!important}
-.section{margin-top:18px;background:#0f1621ee;border:1px solid var(--line);border-radius:14px;overflow:hidden}.sectionHead{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}.sectionHead b{font-size:14px}.tableWrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:1050px}th,td{padding:11px;border-bottom:1px solid #202b3b;text-align:left;font-size:12px}th{background:#131c29;color:#aeb9ca;font-size:10px;text-transform:uppercase}tr:hover td{background:#141e2c}.thumb{width:48px;height:48px;object-fit:cover;border-radius:8px;border:1px solid #344257}.badge{display:inline-block;border-radius:99px;padding:4px 8px;font-size:10px;font-weight:800;background:#1c2440;color:#aab7ff}.actions{display:flex;gap:5px;flex-wrap:wrap}.actions button{padding:6px 8px;border-radius:7px;border:1px solid #334157;background:#141d2b;color:#cdd7e6}
-.modal{position:fixed;inset:0;background:#000b;backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:15px;z-index:50}.modal.show{display:flex}.dialog{width:min(760px,100%);max-height:92vh;overflow:auto;background:#111925;border:1px solid #344257;border-radius:17px;padding:20px;box-shadow:0 30px 80px #000}.dialog h2{margin:0 0 16px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}.slabHidden{display:none!important}.field label{font-size:11px;color:#aab5c6;font-weight:700}input,select,textarea{width:100%;background:#0a1018;color:#eef2f7;border:1px solid #303d52;border-radius:9px;padding:10px;outline:0}input:focus,select:focus,textarea:focus{border-color:var(--blue)}.preview{max-width:180px;max-height:180px;border-radius:10px;border:1px solid var(--line)}.footer{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}
-.menuBtn{display:none}.cloudStatus{display:inline-flex;align-items:center;gap:6px;color:var(--green);font-size:10px;margin-left:10px}.cloudDot{width:7px;height:7px;border-radius:50%;background:var(--green)}
-#authGate{position:fixed;inset:0;background:radial-gradient(circle at 50% -10%,#1a2440 0,#070a10 55%);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}.authBox{width:min(420px,100%);background:#101722;border:1px solid #283447;border-radius:18px;padding:26px;box-shadow:0 30px 90px #000}.authBox h2{margin:0 0 5px}.authBox p{color:#8d99ab;font-size:12px;margin:0 0 20px}.authBox .field{margin:12px 0}.authBox .btn{width:100%;margin-top:10px}.authErr{min-height:18px;color:#fb7185;font-size:11px;margin-top:8px}
-.mobile-only-nav{display:none}
-@media(max-width:1200px){.stats{grid-template-columns:repeat(3,1fr)}.cards{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:900px){.sidebar{width:82px;padding:12px 8px}.brand{justify-content:center;padding-bottom:14px}.brand>div:not(.logo),.sideTitle,.sideSearch,.catList,.sideBtn span,.nav span{display:none}.nav button,.sideBtn{display:grid;place-items:center;padding:12px 6px}.sideBottom{display:block}.sideBottom .btn{font-size:0;width:100%;margin-top:5px}.main{margin-left:82px}.top{padding:0 15px}.content{padding:14px}.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.stat{padding:12px}.stat strong{font-size:17px}}
-@media(max-width:650px){.sidebar{display:none}.main{margin-left:0}.menuBtn{display:block;border:0;background:transparent;color:white;font-size:22px}.top{height:58px;padding:0 12px}.top h1{font-size:15px}.top p{display:none}.topActions .desktop{display:none}.topActions .primary{padding:8px 10px;font-size:12px}.content{padding:10px 10px 76px}.stats{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.tableWrap{overflow:visible}table,thead,tbody,th,td,tr{display:block}table{min-width:0}thead{display:none}tbody tr{position:relative;background:#101722;border:1px solid #283447;border-radius:13px;margin:8px 0;padding:10px 10px 10px 72px;min-height:76px}tbody td{border:0;padding:2px 0;font-size:11px;display:block}tbody td:first-child{position:absolute;left:10px;top:10px;width:52px}tbody td:first-child .thumb{width:52px;height:62px}.dialog{width:100%;max-height:90vh;border-radius:15px;padding:15px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}input,select,textarea{font-size:16px;padding:11px}.preview{max-width:140px;max-height:140px}.mobile-only-nav{position:fixed;display:flex;left:0;right:0;bottom:0;height:64px;background:#090e16f5;border-top:1px solid #283447;z-index:40;padding-bottom:env(safe-area-inset-bottom)}.mobile-only-nav button{flex:1;border:0;background:transparent;color:#8f9bae;font-weight:800;font-size:10px}.mobile-only-nav .add{color:#fff;background:linear-gradient(135deg,#7182ff,#8b5cf6);border-radius:12px;margin:7px 5px;font-size:12px}}
+
+:root{
+--bg:#070a10;
+--panel:#101722;
+--panel2:#151e2b;
+--line:#283447;
+--text:#f2f5fa;
+--muted:#8d99ab;
+--blue:#7182ff;
+--purple:#8b5cf6;
+--green:#34d399;
+--red:#fb7185;
+--gold:#fbbf24;
+}
+
+*{
+box-sizing:border-box;
+}
+
+html{
+scroll-behavior:smooth;
+}
+
+body{
+margin:0;
+background:
+radial-gradient(circle at 20% -10%,#1a2440 0,#070a10 38%);
+color:var(--text);
+font:14px Inter,Arial,"Microsoft YaHei",sans-serif;
+}
+
+button,input,select,textarea{
+font:inherit;
+}
+
+button{
+cursor:pointer;
+}
+
+.app{
+min-height:100vh;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+position:fixed;
+inset:0 auto 0 0;
+width:250px;
+background:#0a0f17f2;
+border-right:1px solid var(--line);
+padding:18px;
+z-index:20;
+display:flex;
+flex-direction:column;
+}
+
+.brand{
+display:flex;
+align-items:center;
+gap:11px;
+padding:4px 5px 20px;
+border-bottom:1px solid #202a39;
+}
+
+.logo{
+width:42px;
+height:42px;
+border-radius:13px;
+overflow:hidden;
+background:linear-gradient(135deg,var(--blue),var(--purple));
+display:grid;
+place-items:center;
+font-size:22px;
+}
+
+.logo img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.brand b{
+font-size:18px;
+}
+
+.brand small{
+display:block;
+color:var(--muted);
+font-size:9px;
+letter-spacing:1px;
+margin-top:2px;
+}
+
+.nav{
+padding:18px 0;
+}
+
+.nav button,
+.sideBtn{
+width:100%;
+border:1px solid transparent;
+background:transparent;
+color:#b5bfd0;
+border-radius:10px;
+padding:11px;
+text-align:left;
+margin:3px 0;
+font-weight:700;
+}
+
+.nav button.active,
+.nav button:hover{
+background:#151f2f;
+border-color:#2b3950;
+color:white;
+}
+
+.sideTitle{
+font-size:9px;
+color:#667389;
+letter-spacing:1.2px;
+font-weight:800;
+margin:16px 6px 7px;
+}
+
+.sideSearch{
+position:relative;
+}
+
+.sideSearch span{
+position:absolute;
+left:10px;
+top:9px;
+color:#758198;
+}
+
+.sideSearch input{
+width:100%;
+padding:10px 10px 10px 30px;
+}
+
+.sideBtn.primary{
+background:linear-gradient(135deg,var(--blue),var(--purple));
+color:white;
+text-align:center;
+border:0;
+}
+
+.sideBtn{
+background:#111a27;
+border-color:#273448;
+text-align:center;
+}
+
+.catList{
+overflow:auto;
+max-height:30vh;
+}
+
+.catItem{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:9px;
+border-radius:9px;
+color:#aeb8c9;
+cursor:pointer;
+}
+
+.catItem:hover,
+.catItem.active{
+background:#151f2f;
+color:#fff;
+}
+
+.catItem em{
+font-style:normal;
+color:#69768a;
+font-size:11px;
+}
+
+.sideBottom{
+margin-top:auto;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:6px;
+}
+
+/* ================= MAIN ================= */
+
+.main{
+margin-left:250px;
+}
+
+.top{
+position:sticky;
+top:0;
+z-index:10;
+height:66px;
+background:#080c13e8;
+backdrop-filter:blur(14px);
+border-bottom:1px solid var(--line);
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 26px;
+}
+
+.top h1{
+font-size:18px;
+margin:0;
+}
+
+.top p{
+margin:3px 0 0;
+color:var(--muted);
+font-size:11px;
+}
+
+.topActions{
+display:flex;
+gap:8px;
+}
+
+.btn{
+border:1px solid #303d52;
+background:#131c29;
+color:#dce4ef;
+border-radius:9px;
+padding:9px 12px;
+font-weight:700;
+}
+
+.btn.primary{
+border:0;
+background:linear-gradient(135deg,var(--blue),var(--purple));
+color:white;
+}
+
+.content{
+padding:24px;
+max-width:1500px;
+margin:auto;
+}
+
+/* ================= MOBILE SEARCH ================= */
+
+.mobileSearch{
+display:none;
+margin-bottom:12px;
+position:relative;
+}
+
+.mobileSearch span{
+position:absolute;
+left:12px;
+top:11px;
+color:#758198;
+}
+
+.mobileSearch input{
+padding-left:35px;
+height:42px;
+}
+
+/* ================= STATS ================= */
+
+.stats{
+display:grid;
+grid-template-columns:repeat(6,1fr);
+gap:12px;
+}
+
+.stat{
+background:#101722e8;
+border:1px solid var(--line);
+border-radius:14px;
+padding:15px;
+}
+
+.stat label{
+display:block;
+color:var(--muted);
+font-size:11px;
+}
+
+.stat strong{
+display:block;
+font-size:20px;
+margin-top:8px;
+}
+
+.stat small{
+color:var(--muted);
+font-size:10px;
+}
+
+/* ================= CATEGORY ================= */
+
+.cards{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:12px;
+margin-top:16px;
+}
+
+.catCard{
+background:#0e151fe8;
+border:1px solid var(--line);
+border-radius:14px;
+padding:15px;
+cursor:pointer;
+}
+
+.catCard:hover{
+border-color:#4b5f87;
+transform:translateY(-1px);
+}
+
+.catCard b{
+font-size:15px;
+}
+
+.catCard div{
+color:var(--muted);
+font-size:11px;
+margin-top:7px;
+}
+
+.catCard strong{
+font-size:17px;
+display:block;
+margin-top:7px;
+}
+
+.positive{
+color:var(--green)!important;
+}
+
+.negative{
+color:var(--red)!important;
+}
+
+/* ================= TABLE ================= */
+
+.section{
+margin-top:18px;
+background:#0f1621ee;
+border:1px solid var(--line);
+border-radius:14px;
+overflow:hidden;
+}
+
+.sectionHead{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:14px 16px;
+border-bottom:1px solid var(--line);
+}
+
+.sectionHead b{
+font-size:14px;
+}
+
+.tableWrap{
+overflow:auto;
+}
+
+table{
+border-collapse:collapse;
+width:100%;
+min-width:1100px;
+}
+
+th,
+td{
+padding:11px;
+border-bottom:1px solid #202b3b;
+text-align:left;
+font-size:12px;
+}
+
+th{
+background:#131c29;
+color:#aeb9ca;
+font-size:10px;
+text-transform:uppercase;
+}
+
+tr:hover td{
+background:#141e2c;
+}
+
+.thumb{
+width:48px;
+height:48px;
+object-fit:cover;
+border-radius:8px;
+border:1px solid #344257;
+}
+
+.badge{
+display:inline-block;
+border-radius:99px;
+padding:4px 8px;
+font-size:10px;
+font-weight:800;
+background:#1c2440;
+color:#aab7ff;
+}
+
+.qtyBadge{
+display:inline-block;
+padding:4px 8px;
+border-radius:7px;
+background:#172331;
+color:#dbe5f4;
+font-weight:800;
+font-size:11px;
+}
+
+.actions{
+display:flex;
+gap:5px;
+flex-wrap:wrap;
+}
+
+.actions button{
+padding:6px 8px;
+border-radius:7px;
+border:1px solid #334157;
+background:#141d2b;
+color:#cdd7e6;
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+position:fixed;
+inset:0;
+background:#000b;
+backdrop-filter:blur(6px);
+display:none;
+align-items:center;
+justify-content:center;
+padding:15px;
+z-index:50;
+}
+
+.modal.show{
+display:flex;
+}
+
+.dialog{
+width:min(760px,100%);
+max-height:92vh;
+overflow:auto;
+background:#111925;
+border:1px solid #344257;
+border-radius:17px;
+padding:20px;
+box-shadow:0 30px 80px #000;
+}
+
+.dialog h2{
+margin:0 0 16px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:11px;
+}
+
+.field{
+display:flex;
+flex-direction:column;
+gap:5px;
+}
+
+.field.full{
+grid-column:1/-1;
+}
+
+.field label{
+font-size:11px;
+color:#aab5c6;
+font-weight:700;
+}
+
+input,
+select,
+textarea{
+width:100%;
+background:#0a1018;
+color:#eef2f7;
+border:1px solid #303d52;
+border-radius:9px;
+padding:10px;
+outline:0;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+border-color:var(--blue);
+}
+
+.preview{
+max-width:180px;
+max-height:180px;
+border-radius:10px;
+border:1px solid var(--line);
+}
+
+.footer{
+display:flex;
+justify-content:flex-end;
+gap:8px;
+margin-top:17px;
+}
+
+.slabHidden{
+display:none!important;
+}
+
+/* ================= AUTH ================= */
+
+#authGate{
+position:fixed;
+inset:0;
+background:
+radial-gradient(circle at 50% -10%,#1a2440 0,#070a10 55%);
+z-index:1000;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+}
+
+#authGate.hidden{
+display:none;
+}
+
+.authBox{
+width:min(420px,100%);
+background:#101722;
+border:1px solid #283447;
+border-radius:18px;
+padding:26px;
+box-shadow:0 30px 90px #000;
+}
+
+.authBox h2{
+margin:0 0 5px;
+}
+
+.authBox p{
+color:#8d99ab;
+font-size:12px;
+margin:0 0 20px;
+}
+
+.authBox .field{
+margin:12px 0;
+}
+
+.authBox .btn{
+width:100%;
+margin-top:10px;
+}
+
+.authErr{
+min-height:18px;
+color:#fb7185;
+font-size:11px;
+margin-top:8px;
+}
+
+.cloudStatus{
+display:inline-flex;
+align-items:center;
+gap:6px;
+color:#34d399;
+font-size:10px;
+margin-left:10px;
+}
+
+.cloudDot{
+width:7px;
+height:7px;
+border-radius:50%;
+background:#34d399;
+}
+
+.userEmail{
+font-size:10px;
+color:#8d99ab;
+max-width:180px;
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap;
+}
+
+/* ================= MOBILE ================= */
+
+.menuBtn{
+display:none;
+border:0;
+background:transparent;
+color:white;
+font-size:22px;
+}
+
+.mobileNav{
+display:none;
+}
+
+@media(max-width:1200px){
+
+.stats{
+grid-template-columns:repeat(3,1fr);
+}
+
+.cards{
+grid-template-columns:repeat(2,1fr);
+}
+
+}
+
+@media(max-width:900px){
+
+.sidebar{
+width:82px;
+padding:12px 8px;
+}
+
+.brand{
+justify-content:center;
+padding-bottom:14px;
+}
+
+.brand>div:not(.logo),
+.sideTitle,
+.sideSearch,
+.catList,
+.sideBtn span,
+.nav span{
+display:none;
+}
+
+.nav button,
+.sideBtn{
+display:grid;
+place-items:center;
+padding:12px 6px;
+}
+
+.sideBottom{
+display:block;
+}
+
+.sideBottom .btn{
+font-size:0;
+width:100%;
+margin-top:5px;
+}
+
+.main{
+margin-left:82px;
+}
+
+.top{
+padding:0 15px;
+}
+
+.content{
+padding:14px;
+}
+
+.stats{
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:9px;
+}
+
+.cards{
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:9px;
+}
+
+.stat{
+padding:12px;
+}
+
+.stat strong{
+font-size:17px;
+}
+
+.mobileSearch{
+display:block;
+}
+
+}
+
+@media(max-width:650px){
+
+.sidebar{
+display:none;
+}
+
+.main{
+margin-left:0;
+}
+
+.top{
+height:58px;
+padding:0 12px;
+}
+
+.top h1{
+font-size:15px;
+}
+
+.top p{
+display:none;
+}
+
+.topActions .desktop{
+display:none;
+}
+
+.topActions .primary{
+padding:8px 10px;
+font-size:12px;
+}
+
+.content{
+padding:10px;
+padding-bottom:76px;
+}
+
+.stats{
+grid-template-columns:1fr 1fr;
+}
+
+.stat label{
+font-size:10px;
+}
+
+.stat strong{
+font-size:16px;
+margin-top:5px;
+}
+
+.stat small{
+font-size:9px;
+}
+
+.cards{
+grid-template-columns:1fr;
+}
+
+.section{
+margin-top:12px;
+}
+
+.sectionHead{
+padding:12px;
+}
+
+.tableWrap{
+overflow:visible;
+}
+
+table,
+thead,
+tbody,
+th,
+td,
+tr{
+display:block;
+}
+
+table{
+min-width:0;
+}
+
+thead{
+display:none;
+}
+
+tbody tr{
+position:relative;
+background:#101722;
+border:1px solid #283447;
+border-radius:13px;
+margin:8px 0;
+padding:10px 10px 10px 72px;
+min-height:76px;
+}
+
+tbody td{
+border:0;
+padding:2px 0;
+font-size:11px;
+display:block;
+}
+
+tbody td:first-child{
+position:absolute;
+left:10px;
+top:10px;
+width:52px;
+}
+
+tbody td:first-child .thumb{
+width:52px;
+height:62px;
+}
+
+tbody td:last-child{
+margin-top:6px;
+}
+
+.actions{
+flex-wrap:wrap;
+}
+
+.actions button{
+font-size:10px;
+padding:5px 7px;
+}
+
+.mobileNav{
+display:flex;
+position:fixed;
+left:0;
+right:0;
+bottom:0;
+height:64px;
+background:#090e16f5;
+border-top:1px solid #283447;
+z-index:40;
+padding-bottom:env(safe-area-inset-bottom);
+}
+
+.mobileNav button{
+flex:1;
+border:0;
+background:transparent;
+color:#8f9bae;
+font-weight:800;
+font-size:10px;
+}
+
+.mobileNav button.active{
+color:#9daaff;
+}
+
+.mobileNav .add{
+color:#fff;
+background:linear-gradient(135deg,#7182ff,#8b5cf6);
+border-radius:12px;
+margin:7px 5px;
+font-size:12px;
+}
+
+.dialog{
+width:100%;
+max-height:90vh;
+border-radius:15px;
+padding:15px;
+}
+
+.grid{
+grid-template-columns:1fr;
+}
+
+.field.full{
+grid-column:auto;
+}
+
+input,
+select,
+textarea{
+font-size:16px;
+padding:11px;
+}
+
+.preview{
+max-width:140px;
+max-height:140px;
+}
+
+}
+
 </style>
+
 </head>
+
 <body>
-<div id="authGate"><div class="authBox">
-<h2>PokéVault</h2><p>登录你的云端卡牌资产库。手机、平板和电脑使用同一份资料。</p>
-<form id="loginForm"><div class="field"><label>邮箱</label><input id="loginEmail" type="email" autocomplete="username" required></div>
-<div class="field"><label>密码</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
-<button class="btn primary" type="submit">登录 PokéVault</button><div id="authErr" class="authErr"></div></form>
-</div></div>
+
+<!-- ================= AUTH ================= -->
+
+<div id="authGate">
+
+<div class="authBox">
+
+<h2>PokéVault</h2>
+
+<p>
+登录你的云端卡牌资产库。<br>
+手机、平板和电脑使用同一份资料。
+</p>
+
+<form id="loginForm">
+
+<div class="field">
+
+<label>邮箱</label>
+
+<input
+id="loginEmail"
+type="email"
+autocomplete="username"
+required
+>
+
+</div>
+
+<div class="field">
+
+<label>密码</label>
+
+<input
+id="loginPassword"
+type="password"
+autocomplete="current-password"
+required
+>
+
+</div>
+
+<button
+class="btn primary"
+type="submit"
+>
+登录 PokéVault
+</button>
+
+<div id="authErr" class="authErr"></div>
+
+</form>
+
+</div>
+
+</div>
+
 
 <div class="app">
+
+<!-- ================= SIDEBAR ================= -->
+
 <aside class="sidebar" id="sidebar">
-<div class="brand"><div class="logo" id="logoBox">🎴</div><div><b>PokéVault</b><small>CARD MANAGER</small></div></div>
-<div class="nav">
-<button class="active" onclick="go('dashboard',this)">⌂ <span>总览 Dashboard</span></button>
-<button onclick="go('holding',this)">▣ <span>目前持有</span></button>
-<button onclick="go('sold',this)">↗ <span>已卖出</span></button>
+
+<div class="brand">
+
+<div class="logo">
+
+<!-- 如果你有自己的 LOGO，把 logo.png 上传到 GitHub -->
+<img
+src="logo.png"
+onerror="this.style.display='none';this.parentElement.innerHTML='🎴';"
+>
+
 </div>
-<button class="sideBtn primary" onclick="openAdd()">＋ <span>新增资产</span></button>
-<div class="sideTitle">搜索</div><div class="sideSearch"><span>⌕</span><input id="sideSearch" placeholder="卡名 / 编号 / 序列号..." oninput="syncSearch(this.value)"></div>
-<div class="sideTitle">分类</div><div class="catList" id="catList"></div>
-<button class="sideBtn" onclick="openCategory()">＋ <span>管理分类</span></button>
-<div class="sideBottom"><button class="btn" onclick="exportData()">备份</button><button class="btn" onclick="document.getElementById('import').click()">恢复</button></div>
+
+<div>
+
+<b>PokéVault</b>
+
+<small>CARD MANAGER</small>
+
+</div>
+
+</div>
+
+
+<div class="nav">
+
+<button
+class="active"
+onclick="go('dashboard',this)"
+>
+⌂ <span>总览 Dashboard</span>
+</button>
+
+<button onclick="go('holding',this)">
+▣ <span>目前持有</span>
+</button>
+
+<button onclick="go('sold',this)">
+↗ <span>已卖出</span>
+</button>
+
+</div>
+
+
+<button
+class="sideBtn primary"
+onclick="openAdd()"
+>
+＋ <span>新增资产</span>
+</button>
+
+
+<div class="sideTitle">
+搜索
+</div>
+
+<div class="sideSearch">
+
+<span>⌕</span>
+
+<input
+id="sideSearch"
+placeholder="卡名 / 编号 / PSA..."
+oninput="syncSearch(this.value)"
+>
+
+</div>
+
+
+<div class="sideTitle">
+分类
+</div>
+
+<div
+class="catList"
+id="catList"
+>
+</div>
+
+
+<button
+class="sideBtn"
+onclick="openCategory()"
+>
+＋ <span>管理分类</span>
+</button>
+
+
+<div class="sideBottom">
+
+<button
+class="btn"
+onclick="exportData()"
+>
+备份
+</button>
+
+<button
+class="btn"
+onclick="document.getElementById('import').click()"
+>
+恢复
+</button>
+
+</div>
+
 </aside>
 
+
+<!-- ================= MAIN ================= -->
+
 <main class="main">
-<header class="top"><div><button class="menuBtn" onclick="toggleMenu()">☰</button><h1>库存总览 <span class="cloudStatus"><i class="cloudDot"></i>云端同步</span></h1><p>Android 手机 / 平板 / 电脑</p></div>
-<div class="topActions"><button class="btn desktop" onclick="exportData()">备份资料</button><button class="btn primary" onclick="openAdd()">＋ 新增资产</button><button class="btn desktop" onclick="logout()">退出</button></div></header>
 
-<div class="content" id="dashboard">
+<header class="top">
+
+<div>
+
+<button
+class="menuBtn"
+onclick="toggleMenu()"
+>
+☰
+</button>
+
+<h1>
+
+库存总览
+
+<span class="cloudStatus">
+<i class="cloudDot"></i>
+云端同步
+</span>
+
+</h1>
+
+<p>
+Android 手机 / 平板 / 电脑
+</p>
+
+</div>
+
+
+<div class="topActions">
+
+<button
+class="btn desktop"
+onclick="exportData()"
+>
+备份资料
+</button>
+
+<button
+class="btn primary"
+onclick="openAdd()"
+>
+＋ 新增资产
+</button>
+
+<button
+class="btn desktop"
+onclick="logout()"
+>
+退出
+</button>
+
+</div>
+
+</header>
+
+
+<div
+class="content"
+id="dashboard"
+>
+
+<!-- MOBILE SEARCH -->
+
+<div class="mobileSearch">
+
+<span>⌕</span>
+
+<input
+id="mobileSearch"
+placeholder="搜索卡名 / 编号 / Grade / PSA..."
+oninput="syncSearch(this.value)"
+>
+
+</div>
+
+
+<!-- ================= STATS ================= -->
+
 <div class="stats">
-<div class="stat"><label>总收卡成本</label><strong id="totalCost">RM 0.00</strong><small>所有资产投入</small></div>
-<div class="stat"><label>已卖出金额</label><strong id="soldAmount">RM 0.00</strong><small>成交金额</small></div>
-<div class="stat"><label>净收入</label><strong id="netIncome" class="positive">RM 0.00</strong><small>卖出价 − 成本 − 费用</small></div>
-<div class="stat"><label>持有成本</label><strong id="holdingCost">RM 0.00</strong><small>目前库存投入</small></div>
-<div class="stat"><label>库存估值</label><strong id="marketValue">RM 0.00</strong><small>当前市值</small></div>
-<div class="stat"><label>未实现利润</label><strong id="unrealized">RM 0.00</strong><small>估值 − 持有成本</small></div>
+
+<div class="stat">
+
+<label>
+总收卡成本
+</label>
+
+<strong id="totalCost">
+RM 0.00
+</strong>
+
+<small>
+所有资产投入
+</small>
+
 </div>
-<div class="cards" id="categoryCards"></div>
 
-<div class="section" id="holding"><div class="sectionHead"><b>📦 目前持有</b><span id="holdingCount"></span></div><div class="tableWrap"><table>
-<thead><tr><th>图片</th><th>名称</th><th>分类</th><th>鉴定公司</th><th>编号</th><th>Grade</th><th>序列号</th><th>收卡日期</th><th>成本</th><th>市值</th><th>持有天数</th><th>操作</th></tr></thead><tbody id="holdingBody"></tbody></table></div></div>
 
-<div class="section" id="sold"><div class="sectionHead"><b>💰 已卖出</b><span id="soldCount"></span></div><div class="tableWrap"><table>
-<thead><tr><th>图片</th><th>名称</th><th>分类</th><th>鉴定公司</th><th>收卡日期</th><th>成本</th><th>卖出日期</th><th>卖出价</th><th>费用</th><th>净收入</th><th>操作</th></tr></thead><tbody id="soldBody"></tbody></table></div></div>
-</div></main>
+<div class="stat">
+
+<label>
+总数量
+</label>
+
+<strong id="totalQty">
+0
+</strong>
+
+<small>
+所有库存数量
+</small>
+
 </div>
 
-<nav class="mobile-only-nav"><button onclick="go('dashboard',this)">⌂<br>首页</button><button onclick="go('holding',this)">▣<br>库存</button><button class="add" onclick="openAdd()">＋<br>新增</button><button onclick="go('sold',this)">↗<br>已卖</button><button onclick="openCategory()">☷<br>分类</button></nav>
 
-<div class="modal" id="editModal"><div class="dialog"><h2 id="modalTitle">新增资产</h2>
-<form id="form" onsubmit="saveItem(event)"><div class="grid">
-<div class="field"><label>分类</label><select id="category" onchange="toggleSlabCompany()"></select></div>
-<div class="field" id="slabCompanyField"><label>鉴定公司</label><select id="slabCompany"></select></div>
-<div class="field"><label>名称</label><input id="name" required></div>
-<div class="field"><label>编号 / 版本</label><input id="code"></div>
-<div class="field"><label>Grade</label><input id="grade" placeholder="PSA 10 / CGC 10 / Sealed"></div>
-<div class="field"><label>PSA / 鉴定序列号</label><input id="serial"></div>
-<div class="field"><label>收卡日期</label><input id="buyDate" type="date"></div>
-<div class="field"><label>收卡价 (RM)</label><input id="buyPrice" type="number" step=".01" required></div>
-<div class="field"><label>当前市值 (RM)</label><input id="market" type="number" step=".01"></div>
-<div class="field"><label>卖出日期</label><input id="sellDate" type="date"></div>
-<div class="field"><label>卖出价 (RM)</label><input id="sellPrice" type="number" step=".01"></div>
-<div class="field"><label>手续费 (RM)</label><input id="fees" type="number" step=".01" value="0"></div>
-<div class="field"><label>运费 / 其他成本 (RM)</label><input id="shipping" type="number" step=".01" value="0"></div>
-<div class="field full"><label>图片</label><input id="image" type="file" accept="image/*" capture="environment" onchange="previewImage(this)"><img id="preview" class="preview" hidden></div>
-<div class="field full"><label>备注</label><textarea id="note" rows="3"></textarea></div>
-</div><div class="footer"><button type="button" class="btn" onclick="closeModal()">取消</button><button class="btn primary">保存</button></div></form>
-</div></div>
+<div class="stat">
 
-<div class="modal" id="catModal"><div class="dialog"><h2>分类管理</h2><div id="catManage"></div><div style="display:flex;gap:8px;margin-top:15px"><input id="newCat" placeholder="例如 Booster Box"><button class="btn primary" onclick="addCategory()">＋ 新增</button></div><div class="footer"><button class="btn" onclick="closeCategory()">完成</button></div></div></div>
-<input id="import" type="file" accept=".json" hidden onchange="importData(this)">
+<label>
+已卖出金额
+</label>
+
+<strong id="soldAmount">
+RM 0.00
+</strong>
+
+<small>
+实际成交金额
+</small>
+
+</div>
+
+
+<div class="stat">
+
+<label>
+净收入
+</label>
+
+<strong
+id="netIncome"
+class="positive"
+>
+RM 0.00
+</strong>
+
+<small>
+卖出价 − 成本 − 费用
+</small>
+
+</div>
+
+
+<div class="stat">
+
+<label>
+持有成本
+</label>
+
+<strong id="holdingCost">
+RM 0.00
+</strong>
+
+<small>
+目前库存投入
+</small>
+
+</div>
+
+
+<div class="stat">
+
+<label>
+库存估值
+</label>
+
+<strong id="marketValue">
+RM 0.00
+</strong>
+
+<small>
+当前市值 × 数量
+</small>
+
+</div>
+
+
+<div class="stat">
+
+<label>
+目前持有数量
+</label>
+
+<strong id="holdingQty">
+0
+</strong>
+
+<small>
+剩余库存
+</small>
+
+</div>
+
+
+<div class="stat">
+
+<label>
+未实现利润
+</label>
+
+<strong id="unrealized">
+RM 0.00
+</strong>
+
+<small>
+估值 − 持有成本
+</small>
+
+</div>
+
+
+</div>
+
+
+<!-- ================= CATEGORY CARDS ================= -->
+
+<div
+class="cards"
+id="categoryCards"
+>
+</div>
+
+
+<!-- ================= HOLDING ================= -->
+
+<div
+class="section"
+id="holding"
+>
+
+<div class="sectionHead">
+
+<b>
+📦 目前持有
+</b>
+
+<span id="holdingCount"></span>
+
+</div>
+
+
+<div class="tableWrap">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>图片</th>
+<th>名称</th>
+<th>分类</th>
+<th>数量</th>
+<th>鉴定公司</th>
+<th>编号</th>
+<th>Grade</th>
+<th>序列号</th>
+<th>收卡日期</th>
+<th>单张成本</th>
+<th>总成本</th>
+<th>单张市值</th>
+<th>库存市值</th>
+<th>持有天数</th>
+<th>操作</th>
+
+</tr>
+
+</thead>
+
+<tbody id="holdingBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<!-- ================= SOLD ================= -->
+
+<div
+class="section"
+id="sold"
+>
+
+<div class="sectionHead">
+
+<b>
+💰 已卖出
+</b>
+
+<span id="soldCount"></span>
+
+</div>
+
+
+<div class="tableWrap">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>图片</th>
+<th>名称</th>
+<th>分类</th>
+<th>卖出数量</th>
+<th>鉴定公司</th>
+<th>收卡日期</th>
+<th>成本</th>
+<th>卖出日期</th>
+<th>卖出总价</th>
+<th>费用</th>
+<th>净收入</th>
+<th>操作</th>
+
+</tr>
+
+</thead>
+
+<tbody id="soldBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+</div>
+
+</main>
+
+
+<!-- ================= MOBILE NAV ================= -->
+
+<nav class="mobileNav">
+
+<button onclick="go('dashboard',this)">
+⌂<br>
+首页
+</button>
+
+<button onclick="go('holding',this)">
+▣<br>
+库存
+</button>
+
+<button
+class="add"
+onclick="openAdd()"
+>
+＋<br>
+新增
+</button>
+
+<button onclick="go('sold',this)">
+↗<br>
+已卖
+</button>
+
+<button onclick="openCategory()">
+☷<br>
+分类
+</button>
+
+</nav>
+
+</div>
+
+
+<!-- ================= EDIT MODAL ================= -->
+
+<div
+class="modal"
+id="editModal"
+>
+
+<div class="dialog">
+
+<h2 id="modalTitle">
+新增资产
+</h2>
+
+
+<form
+id="form"
+onsubmit="saveItem(event)"
+>
+
+<div class="grid">
+
+
+<div class="field">
+
+<label>
+分类
+</label>
+
+<select
+id="category"
+onchange="toggleSlabCompany()"
+>
+</select>
+
+</div>
+
+
+<div
+class="field"
+id="slabCompanyField"
+>
+
+<label>
+鉴定公司
+</label>
+
+<select id="slabCompany"></select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+名称
+</label>
+
+<input
+id="name"
+required
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+编号 / 版本
+</label>
+
+<input id="code">
+
+</div>
+
+
+<div class="field">
+
+<label>
+Grade
+</label>
+
+<input
+id="grade"
+placeholder="PSA 10 / PSA 9 / Sealed"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+序列号
+</label>
+
+<input id="serial">
+
+</div>
+
+
+<div class="field">
+
+<label>
+数量
+</label>
+
+<input
+id="quantity"
+type="number"
+min="1"
+step="1"
+value="1"
+required
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+本次卖出数量
+</label>
+
+<input
+id="soldQuantity"
+type="number"
+min="0"
+step="1"
+value="0"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+收卡日期
+</label>
+
+<input
+id="buyDate"
+type="date"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+收卡价 / 单张成本 (RM)
+</label>
+
+<input
+id="buyPrice"
+type="number"
+step=".01"
+min="0"
+required
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+当前市值 / 单张 (RM)
+</label>
+
+<input
+id="market"
+type="number"
+step=".01"
+min="0"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+卖出日期
+</label>
+
+<input
+id="sellDate"
+type="date"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+卖出总价 (RM)
+</label>
+
+<input
+id="sellPrice"
+type="number"
+step=".01"
+min="0"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+手续费 (RM)
+</label>
+
+<input
+id="fees"
+type="number"
+step=".01"
+min="0"
+value="0"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+运费 / 其他成本 (RM)
+</label>
+
+<input
+id="shipping"
+type="number"
+step=".01"
+min="0"
+value="0"
+>
+
+</div>
+
+
+<div class="field full">
+
+<label>
+图片
+</label>
+
+<input
+id="image"
+type="file"
+accept="image/*"
+capture="environment"
+onchange="previewImage(this)"
+>
+
+<img
+id="preview"
+class="preview"
+hidden
+>
+
+</div>
+
+
+<div class="field full">
+
+<label>
+备注
+</label>
+
+<textarea
+id="note"
+rows="3"
+></textarea>
+
+</div>
+
+
+</div>
+
+
+<div class="footer">
+
+<button
+type="button"
+class="btn"
+onclick="closeModal()"
+>
+取消
+</button>
+
+<button
+class="btn primary"
+>
+保存
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+
+<!-- ================= CATEGORY MODAL ================= -->
+
+<div
+class="modal"
+id="catModal"
+>
+
+<div class="dialog">
+
+<h2>
+分类管理
+</h2>
+
+<div id="catManage"></div>
+
+
+<div
+style="display:flex;gap:8px;margin-top:15px"
+>
+
+<input
+id="newCat"
+placeholder="例如 Booster Box"
+>
+
+<button
+class="btn primary"
+onclick="addCategory()"
+>
+＋ 新增
+</button>
+
+</div>
+
+
+<div class="footer">
+
+<button
+class="btn"
+onclick="closeCategory()"
+>
+完成
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<input
+id="import"
+type="file"
+accept=".json"
+hidden
+onchange="importData(this)"
+>
+
 
 <script>
-const SUPABASE_URL='https://vlkvfribpxoywyzdrwuv.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY='sb_publishable_qRyXwJ9TO42yfiiJ06XFeg_RvfRgkUs';
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-const KEY='pokevault_cloud_v14',CATKEY='pokevault_categories_v14';
-const SLAB_COMPANIES=['PSA','CGC','CCIC','TAG','BGS','SGC','ACE','Other'];
-let items=[],cats=['Raw Card','SLAB','ETB'],editId=null,selectedCat='all',query='',imageData='',currentUser=null;
-const $=id=>document.getElementById(id);
-function esc(x){return String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function money(n){return 'RM '+Number(n||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2})}
-function extra(x){return Number(x.fees||0)+Number(x.shipping||0)}
-function net(x){return Number(x.sellPrice||0)-Number(x.buyPrice||0)-extra(x)}
-function days(x){let a=new Date(x.buyDate||Date.now()),b=new Date(x.sellDate||Date.now());return Math.max(0,Math.floor((b-a)/86400000))}
-function filtered(){return items.filter(x=>(selectedCat==='all'||x.category===selectedCat)&&(!query||`${x.name} ${x.code} ${x.serial} ${x.grade} ${x.slabCompany||''} ${x.category} ${x.note}`.toLowerCase().includes(query.toLowerCase())))}
-function renderSlabCompanies(){$('slabCompany').innerHTML=SLAB_COMPANIES.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}
-function toggleSlabCompany(){$('slabCompanyField').classList.toggle('slabHidden',$('category').value!=='SLAB')}
-function fromDb(x){return {id:x.id,category:x.category||'Raw Card',slabCompany:x.slab_company||'',name:x.name||'',code:x.code||x.card_number||'',grade:x.grade||'',serial:x.serial||x.grading_serial||'',buyDate:x.buy_date||'',buyPrice:Number(x.buy_price||0),market:Number(x.market||x.market_value||0),sellDate:x.sell_date||'',sellPrice:Number(x.sell_price||0),fees:Number(x.fees||0),shipping:Number(x.shipping||0),note:x.note||'',image:x.image||x.image_url||''}}
-function toDb(x){return {id:x.id,user_id:currentUser.id,category:x.category,slab_company:x.slabCompany||'',name:x.name,code:x.code||'',grade:x.grade||'',serial:x.serial||'',buy_date:x.buyDate||null,buy_price:Number(x.buyPrice||0),market:Number(x.market||0),sell_date:x.sellDate||null,sell_price:x.sellPrice===''?null:Number(x.sellPrice||0),fees:Number(x.fees||0),shipping:Number(x.shipping||0),note:x.note||'',image:x.image||'',updated_at:new Date().toISOString()}}
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+'https://vlkvfribpxoywyzdrwuv.supabase.co';
+
+const SUPABASE_PUBLISHABLE_KEY =
+'sb_publishable_qRyXwJ9TO42yfiiJ06XFeg_RvfRgkUs';
+
+const sb =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_PUBLISHABLE_KEY
+);
+
+
+/* =========================================================
+   APP
+========================================================= */
+
+const KEY='pokevault_cloud_v15';
+
+const CATKEY='pokevault_categories_v15';
+
+const SLAB_COMPANIES=[
+'PSA',
+'CGC',
+'CCIC',
+'TAG',
+'BGS',
+'SGC',
+'ACE',
+'Other'
+];
+
+let items=[];
+
+let cats=[
+'Raw Card',
+'SLAB',
+'ETB'
+];
+
+let editId=null;
+
+let selectedCat='all';
+
+let query='';
+
+let imageData='';
+
+let currentUser=null;
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+const $ =
+id => document.getElementById(id);
+
+
+function esc(x){
+
+return String(x ?? '')
+.replace(/[&<>"']/g,m=>({
+
+'&':'&amp;',
+'<':'&lt;',
+'>':'&gt;',
+'"':'&quot;',
+"'":'&#39;'
+
+}[m]));
+
+}
+
+
+function money(n){
+
+return 'RM '+
+Number(n||0).toLocaleString(
+'en-MY',
+{
+minimumFractionDigits:2,
+maximumFractionDigits:2
+}
+);
+
+}
+
+
+function num(n){
+
+return Number(n||0);
+
+}
+
+
+function qty(x){
+
+return Math.max(
+1,
+parseInt(x.quantity||1,10)
+);
+
+}
+
+
+function soldQty(x){
+
+return Math.min(
+qty(x),
+Math.max(
+0,
+parseInt(x.soldQuantity||0,10)
+)
+);
+
+}
+
+
+function remainingQty(x){
+
+return Math.max(
+0,
+qty(x)-soldQty(x)
+);
+
+}
+
+
+function extra(x){
+
+return num(x.fees)+num(x.shipping);
+
+}
+
+
+function holdingCostItem(x){
+
+return remainingQty(x)*num(x.buyPrice);
+
+}
+
+
+function inventoryValueItem(x){
+
+return remainingQty(x)*num(x.market);
+
+}
+
+
+function soldCostItem(x){
+
+return soldQty(x)*num(x.buyPrice);
+
+}
+
+
+function net(x){
+
+return num(x.sellPrice)
+-
+soldCostItem(x)
+-
+extra(x);
+
+}
+
+
+function days(x){
+
+if(!x.buyDate){
+return 0;
+}
+
+let a=new Date(x.buyDate+'T00:00:00');
+
+let end=x.sellDate
+?new Date(x.sellDate+'T00:00:00')
+:new Date();
+
+return Math.max(
+0,
+Math.floor(
+(end-a)/86400000
+)
+);
+
+}
+
+
+function formatDate(date){
+
+if(!date){
+return '—';
+}
+
+let p=String(date).split('-');
+
+if(p.length!==3){
+return date;
+}
+
+return `${p[2]}/${p[1]}/${p[0]}`;
+
+}
+
+
+/* =========================================================
+   FILTER
+========================================================= */
+
+function filtered(){
+
+return items.filter(x=>{
+
+let categoryOK=
+selectedCat==='all'
+||
+x.category===selectedCat;
+
+let text=`
+
+${x.name}
+${x.code}
+${x.serial}
+${x.grade}
+${x.slabCompany||''}
+${x.category}
+${x.note}
+
+`.toLowerCase();
+
+let searchOK=
+!query
+||
+text.includes(query.toLowerCase());
+
+return categoryOK && searchOK;
+
+});
+
+}
+
+
+/* =========================================================
+   SLAB
+========================================================= */
+
+function renderSlabCompanies(){
+
+$('slabCompany').innerHTML=
+
+SLAB_COMPANIES
+.map(c=>
+`<option value="${esc(c)}">
+${esc(c)}
+</option>`
+)
+.join('');
+
+}
+
+
+function toggleSlabCompany(){
+
+$('slabCompanyField')
+.classList.toggle(
+'slabHidden',
+$('category').value!=='SLAB'
+);
+
+}
+
+
+/* =========================================================
+   DATABASE CONVERSION
+========================================================= */
+
+function fromDb(x){
+
+return {
+
+id:x.id,
+
+category:x.category||'Raw Card',
+
+slabCompany:x.slab_company||'',
+
+name:x.name||'',
+
+code:x.code||'',
+
+grade:x.grade||'',
+
+serial:x.serial||'',
+
+buyDate:x.buy_date||'',
+
+buyPrice:num(x.buy_price),
+
+market:num(x.market),
+
+sellDate:x.sell_date||'',
+
+sellPrice:num(x.sell_price),
+
+fees:num(x.fees),
+
+shipping:num(x.shipping),
+
+note:x.note||'',
+
+image:x.image||'',
+
+quantity:Math.max(
+1,
+parseInt(x.quantity||1,10)
+),
+
+soldQuantity:Math.max(
+0,
+parseInt(x.sold_quantity||0,10)
+)
+
+};
+
+}
+
+
+function toDb(x){
+
+return {
+
+id:x.id,
+
+user_id:currentUser.id,
+
+category:x.category,
+
+slab_company:x.slabCompany||'',
+
+name:x.name,
+
+code:x.code||'',
+
+grade:x.grade||'',
+
+serial:x.serial||'',
+
+buy_date:x.buyDate||null,
+
+buy_price:num(x.buyPrice),
+
+market:num(x.market),
+
+sell_date:x.sellDate||null,
+
+sell_price:
+x.sellPrice==='' ||
+x.sellPrice===null
+?null
+:num(x.sellPrice),
+
+fees:num(x.fees),
+
+shipping:num(x.shipping),
+
+note:x.note||'',
+
+image:x.image||'',
+
+quantity:qty(x),
+
+sold_quantity:soldQty(x),
+
+is_sold:
+remainingQty(x)===0,
+
+updated_at:
+new Date().toISOString()
+
+};
+
+}
+
+
+/* =========================================================
+   CLOUD
+========================================================= */
+
 async function loadCloud(){
- if(!currentUser)return;
- const {data,error}=await sb.from('cards').select('*').order('created_at',{ascending:false});
- if(error){console.error(error);$('authErr').textContent='数据库读取失败：'+error.message;return}
- items=(data||[]).map(fromDb);localStorage.setItem(KEY,JSON.stringify(items));
- const {data:cd,error:ce}=await sb.from('categories').select('name').order('sort_order',{ascending:true});
- if(!ce&&cd&&cd.length)cats=[...new Set(cd.map(x=>x.name).filter(Boolean))];
- cats=[...new Set([...cats,...items.map(x=>x.category).filter(Boolean)])];localStorage.setItem(CATKEY,JSON.stringify(cats));render();
+
+if(!currentUser){
+return;
 }
+
+const {
+data,
+error
+}=await sb
+.from('cards')
+.select('*')
+.order('created_at',{
+ascending:false
+});
+
+
+if(error){
+
+console.error(error);
+
+$('authErr').textContent=
+'数据库读取失败：'+error.message;
+
+return;
+
+}
+
+
+items=(data||[]).map(fromDb);
+
+localStorage.setItem(
+KEY,
+JSON.stringify(items)
+);
+
+
+const {
+data:cd,
+error:ce
+}=await sb
+.from('categories')
+.select('name')
+.order('sort_order',{
+ascending:true
+});
+
+
+if(!ce && cd && cd.length){
+
+cats=[
+...new Set(
+cd
+.map(x=>x.name)
+.filter(Boolean)
+)
+];
+
+}
+
+
+cats=[
+...new Set([
+...cats,
+...items
+.map(x=>x.category)
+.filter(Boolean)
+])
+];
+
+
+localStorage.setItem(
+CATKEY,
+JSON.stringify(cats)
+);
+
+render();
+
+}
+
+
+/* =========================================================
+   AUTH
+========================================================= */
+
 async function initAuth(){
- const {data}=await sb.auth.getSession();
- if(data.session){currentUser=data.session.user;$('authGate').style.display='none';await loadCloud();return}
- $('authGate').style.display='flex';
- sb.auth.onAuthStateChange(async (_event,session)=>{if(session){currentUser=session.user;$('authGate').style.display='none';await loadCloud()}else{currentUser=null;$('authGate').style.display='flex'}});
+
+const {
+data
+}=await sb.auth.getSession();
+
+
+if(data.session){
+
+currentUser=
+data.session.user;
+
+$('authGate')
+.classList.add('hidden');
+
+await loadCloud();
+
+return;
+
 }
-$('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('authErr').textContent='登录中...';const {error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error)$('authErr').textContent='登录失败：'+error.message;else $('authErr').textContent=''});
-async function logout(){await sb.auth.signOut()}
-function save(){localStorage.setItem(KEY,JSON.stringify(items))}
-function saveCats(){localStorage.setItem(CATKEY,JSON.stringify(cats))}
+
+
+$('authGate')
+.classList.remove('hidden');
+
+
+sb.auth.onAuthStateChange(
+async(_event,session)=>{
+
+if(session){
+
+currentUser=
+session.user;
+
+$('authGate')
+.classList.add('hidden');
+
+await loadCloud();
+
+}else{
+
+currentUser=null;
+
+$('authGate')
+.classList.remove('hidden');
+
+}
+
+});
+
+}
+
+
+$('loginForm')
+.addEventListener(
+'submit',
+async e=>{
+
+e.preventDefault();
+
+$('authErr').textContent=
+'登录中...';
+
+const {
+error
+}=await sb.auth.signInWithPassword({
+
+email:
+$('loginEmail')
+.value
+.trim(),
+
+password:
+$('loginPassword')
+.value
+
+});
+
+
+if(error){
+
+$('authErr').textContent=
+'登录失败：'+error.message;
+
+}else{
+
+$('authErr').textContent='';
+
+}
+
+});
+
+
+async function logout(){
+
+await sb.auth.signOut();
+
+}
+
+
+/* =========================================================
+   LOCAL
+========================================================= */
+
+function save(){
+
+localStorage.setItem(
+KEY,
+JSON.stringify(items)
+);
+
+}
+
+
+function saveCats(){
+
+localStorage.setItem(
+CATKEY,
+JSON.stringify(cats)
+);
+
+}
+
+
+/* =========================================================
+   RENDER
+========================================================= */
+
 function render(){
- cats=[...new Set([...cats,...items.map(x=>x.category).filter(Boolean)])];saveCats();
- $('category').innerHTML=cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');renderSlabCompanies();toggleSlabCompany();renderSide();
- let all=filtered(),hold=all.filter(x=>!x.sellDate),sold=all.filter(x=>x.sellDate);
- const cost=all.reduce((a,x)=>a+Number(x.buyPrice||0)+extra(x),0),sa=sold.reduce((a,x)=>a+Number(x.sellPrice||0),0),ni=sold.reduce((a,x)=>a+net(x),0),hc=hold.reduce((a,x)=>a+Number(x.buyPrice||0)+extra(x),0),mv=hold.reduce((a,x)=>a+Number(x.market||0),0);
- $('totalCost').textContent=money(cost);$('soldAmount').textContent=money(sa);$('netIncome').textContent=money(ni);$('netIncome').className=ni>=0?'positive':'negative';$('holdingCost').textContent=money(hc);$('marketValue').textContent=money(mv);$('unrealized').textContent=money(mv-hc);$('unrealized').className=mv-hc>=0?'positive':'negative';
- $('categoryCards').innerHTML=cats.map(c=>{let a=items.filter(x=>x.category===c),h=a.filter(x=>!x.sellDate),s=a.filter(x=>x.sellDate),cc=a.reduce((q,x)=>q+Number(x.buyPrice||0)+extra(x),0),nn=s.reduce((q,x)=>q+net(x),0),mm=h.reduce((q,x)=>q+Number(x.market||0),0);return `<div class="catCard" onclick="filterCat('${esc(c)}')"><b>${esc(c)}</b><div>数量 ${a.length} · 持有 ${h.length} · 已卖 ${s.length}</div><strong>成本 ${money(cc)}</strong><div>库存估值 ${money(mm)}</div><div class="${nn>=0?'positive':'negative'}">净收入 ${money(nn)}</div></div>`}).join('');
- $('holdingCount').textContent=hold.length+' 项';$('soldCount').textContent=sold.length+' 项';$('holdingBody').innerHTML=hold.map(rowHold).join('')||`<tr><td colspan="12" style="text-align:center;color:#778399;padding:35px">暂无资料</td></tr>`;$('soldBody').innerHTML=sold.map(rowSold).join('')||`<tr><td colspan="11" style="text-align:center;color:#778399;padding:35px">暂无资料</td></tr>`;
+
+cats=[
+...new Set([
+...cats,
+...items
+.map(x=>x.category)
+.filter(Boolean)
+])
+];
+
+saveCats();
+
+$('category').innerHTML=
+
+cats
+.map(c=>
+`<option value="${esc(c)}">
+${esc(c)}
+</option>`
+)
+.join('');
+
+
+renderSlabCompanies();
+
+toggleSlabCompany();
+
+renderSide();
+
+
+let all=filtered();
+
+
+let holding=
+all.filter(
+x=>remainingQty(x)>0
+);
+
+
+let sold=
+all.filter(
+x=>soldQty(x)>0
+);
+
+
+/* =========================
+   TOTAL COST
+========================= */
+
+const cost=
+all.reduce(
+(a,x)=>
+a+
+qty(x)*num(x.buyPrice)+extra(x),
+0
+);
+
+
+/* =========================
+   SOLD AMOUNT
+========================= */
+
+const soldAmount=
+sold.reduce(
+(a,x)=>
+a+num(x.sellPrice),
+0
+);
+
+
+/* =========================
+   NET INCOME
+========================= */
+
+const netIncome=
+sold.reduce(
+(a,x)=>
+a+net(x),
+0
+);
+
+
+/* =========================
+   HOLDING COST
+========================= */
+
+const holdingCost=
+holding.reduce(
+(a,x)=>
+a+holdingCostItem(x)+extra(x),
+0
+);
+
+
+/* =========================
+   MARKET
+========================= */
+
+const marketValue=
+holding.reduce(
+(a,x)=>
+a+inventoryValueItem(x),
+0
+);
+
+
+/* =========================
+   QUANTITY
+========================= */
+
+const totalQty=
+all.reduce(
+(a,x)=>
+a+qty(x),
+0
+);
+
+
+const holdingQty=
+holding.reduce(
+(a,x)=>
+a+remainingQty(x),
+0
+);
+
+
+const soldQtyTotal=
+sold.reduce(
+(a,x)=>
+a+soldQty(x),
+0
+);
+
+
+const unrealized=
+marketValue-holdingCost;
+
+
+/* =========================
+   STATS
+========================= */
+
+$('totalCost').textContent=
+money(cost);
+
+$('totalQty').textContent=
+totalQty;
+
+$('soldAmount').textContent=
+money(soldAmount);
+
+$('netIncome').textContent=
+money(netIncome);
+
+$('netIncome').className=
+netIncome>=0
+?'positive'
+:'negative';
+
+$('holdingCost').textContent=
+money(holdingCost);
+
+$('marketValue').textContent=
+money(marketValue);
+
+$('holdingQty').textContent=
+holdingQty;
+
+$('unrealized').textContent=
+money(unrealized);
+
+$('unrealized').className=
+unrealized>=0
+?'positive'
+:'negative';
+
+
+/* =========================
+   CATEGORY CARDS
+========================= */
+
+$('categoryCards').innerHTML=
+
+cats.map(c=>{
+
+let a=items.filter(
+x=>x.category===c
+);
+
+let h=a.filter(
+x=>remainingQty(x)>0
+);
+
+let s=a.filter(
+x=>soldQty(x)>0
+);
+
+let totalQ=a.reduce(
+(q,x)=>q+qty(x),
+0
+);
+
+let holdQ=h.reduce(
+(q,x)=>q+remainingQty(x),
+0
+);
+
+let soldQ=s.reduce(
+(q,x)=>q+soldQty(x),
+0
+);
+
+let cc=a.reduce(
+(q,x)=>
+q+
+qty(x)*num(x.buyPrice)+extra(x),
+0
+);
+
+let mm=h.reduce(
+(q,x)=>
+q+
+inventoryValueItem(x),
+0
+);
+
+let nn=s.reduce(
+(q,x)=>
+q+net(x),
+0
+);
+
+return `
+
+<div
+class="catCard"
+onclick="filterCat('${esc(c)}')"
+>
+
+<b>${esc(c)}</b>
+
+<div>
+数量 ${totalQ}
+· 持有 ${holdQ}
+· 已卖 ${soldQ}
+</div>
+
+<strong>
+成本 ${money(cc)}
+</strong>
+
+<div>
+库存估值 ${money(mm)}
+</div>
+
+<div
+class="${nn>=0?'positive':'negative'}"
+>
+净收入 ${money(nn)}
+</div>
+
+</div>
+
+`;
+
+}).join('');
+
+
+$('holdingCount').textContent=
+`${holdingQty} 件 / ${holding.length} 项`;
+
+$('soldCount').textContent=
+`${soldQtyTotal} 件 / ${sold.length} 项`;
+
+
+$('holdingBody').innerHTML=
+
+holding
+.map(rowHold)
+.join('')
+||
+`
+<tr>
+<td colspan="15"
+style="text-align:center;color:#778399;padding:35px">
+暂无资料
+</td>
+</tr>
+`;
+
+
+$('soldBody').innerHTML=
+
+sold
+.map(rowSold)
+.join('')
+||
+`
+<tr>
+<td colspan="12"
+style="text-align:center;color:#778399;padding:35px">
+暂无资料
+</td>
+</tr>
+`;
+
 }
-function rowHold(x){return `<tr><td>${x.image?`<img class="thumb" src="${esc(x.image)}">`:'—'}</td><td><b>${esc(x.name)}</b></td><td><span class="badge">${esc(x.category)}</span></td><td>${x.category==='SLAB'?esc(x.slabCompany||'PSA'):'—'}</td><td>${esc(x.code)}</td><td>${esc(x.grade||'—')}</td><td>${esc(x.serial||'—')}</td><td>${formatDate(x.buyDate)}</td><td><b>${money(x.buyPrice)}</b></td><td>${money(x.market)}</td><td>${days(x)}</td><td><div class="actions"><button onclick="editItem('${x.id}')">编辑</button><button onclick="sellItem('${x.id}')">卖出</button><button onclick="delItem('${x.id}')">删除</button></div></td></tr>`}
-function rowSold(x){return `<tr><td>${x.image?`<img class="thumb" src="${esc(x.image)}">`:'—'}</td><td><b>${esc(x.name)}</b></td><td><span class="badge">${esc(x.category)}</span></td><td>${x.category==='SLAB'?esc(x.slabCompany||'PSA'):'—'}</td><td>${formatDate(x.buyDate)}</td><td>${money(x.buyPrice)}</td><td>${formatDate(x.sellDate)}</td><td>${money(x.sellPrice)}</td><td>${money(extra(x))}</td><td class="${net(x)>=0?'positive':'negative'}">${money(net(x))}</td><td><div class="actions"><button onclick="editItem('${x.id}')">编辑</button><button onclick="delItem('${x.id}')">删除</button></div></td></tr>`}
-function formatDate(v){if(!v)return '—';let p=String(v).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:v}
-function renderSide(){$('catList').innerHTML=`<div class="catItem ${selectedCat==='all'?'active':''}" onclick="filterCat('all')"><span>全部分类</span><em>${items.length}</em></div>`+cats.map(c=>`<div class="catItem ${selectedCat===c?'active':''}" onclick="filterCat('${esc(c)}')"><span>${esc(c)}${c==='SLAB'?`<small style="display:block;color:#667389;font-size:9px">PSA · CGC · CCIC · TAG · BGS</small>`:''}</span><em>${items.filter(x=>x.category===c).length}</em></div>`).join('');$('sideSearch').value=query}
-function filterCat(c){selectedCat=c;render()}
-function syncSearch(v){query=v;render()}
-function go(id,btn){$(id).scrollIntoView({behavior:'smooth',block:'start'});document.querySelectorAll('.nav button,.mobile-only-nav button').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active');$('sidebar').classList.remove('mobileOpen')}
-function toggleMenu(){$('sidebar').classList.toggle('mobileOpen')}
-function openAdd(){editId=null;imageData='';$('form').reset();$('modalTitle').textContent='新增资产';$('category').value=cats.includes('SLAB')?'SLAB':cats[0];$('slabCompany').value='PSA';toggleSlabCompany();$('preview').hidden=true;$('editModal').classList.add('show')}
-function editItem(id){let x=items.find(a=>a.id==id);if(!x)return;editId=id;$('name').value=x.name;$('code').value=x.code||'';$('grade').value=x.grade||'';$('serial').value=x.serial||'';$('buyDate').value=x.buyDate||'';$('buyPrice').value=x.buyPrice||0;$('market').value=x.market||0;$('sellDate').value=x.sellDate||'';$('sellPrice').value=x.sellPrice??'';$('fees').value=x.fees||0;$('shipping').value=x.shipping||0;$('note').value=x.note||'';$('category').value=cats.includes(x.category)?x.category:'SLAB';$('slabCompany').value=x.slabCompany||'PSA';toggleSlabCompany();imageData=x.image||'';$('preview').src=imageData;$('preview').hidden=!imageData;$('modalTitle').textContent='编辑资产';$('editModal').classList.add('show')}
-function sellItem(id){editItem(id);setTimeout(()=>{$('sellDate').value=new Date().toISOString().slice(0,10)},0)}
+
+
+/* =========================================================
+   HOLDING ROW
+========================================================= */
+
+function rowHold(x){
+
+let rq=remainingQty(x);
+
+return `
+
+<tr>
+
+<td>
+
+${
+x.image
+?
+`<img
+class="thumb"
+src="${esc(x.image)}"
+>`
+:
+'—'
+}
+
+</td>
+
+
+<td>
+
+<b>
+${esc(x.name)}
+</b>
+
+</td>
+
+
+<td>
+
+<span class="badge">
+${esc(x.category)}
+</span>
+
+</td>
+
+
+<td>
+
+<span class="qtyBadge">
+${rq}
+</span>
+
+</td>
+
+
+<td>
+
+${
+x.category==='SLAB'
+?
+esc(x.slabCompany||'PSA')
+:
+'—'
+}
+
+</td>
+
+
+<td>
+${esc(x.code||'—')}
+</td>
+
+
+<td>
+${esc(x.grade||'—')}
+</td>
+
+
+<td>
+${esc(x.serial||'—')}
+</td>
+
+
+<td>
+${formatDate(x.buyDate)}
+</td>
+
+
+<td>
+
+<b>
+${money(x.buyPrice)}
+</b>
+
+</td>
+
+
+<td>
+
+<b>
+${money(rq*num(x.buyPrice))}
+</b>
+
+</td>
+
+
+<td>
+${money(x.market)}
+</td>
+
+
+<td>
+${money(inventoryValueItem(x))}
+</td>
+
+
+<td>
+${days(x)}
+</td>
+
+
+<td>
+
+<div class="actions">
+
+<button
+onclick="editItem('${x.id}')"
+>
+编辑
+</button>
+
+<button
+onclick="sellItem('${x.id}')"
+>
+卖出
+</button>
+
+<button
+onclick="delItem('${x.id}')"
+>
+删除
+</button>
+
+</div>
+
+</td>
+
+</tr>
+
+`;
+
+}
+
+
+/* =========================================================
+   SOLD ROW
+========================================================= */
+
+function rowSold(x){
+
+return `
+
+<tr>
+
+<td>
+
+${
+x.image
+?
+`<img
+class="thumb"
+src="${esc(x.image)}"
+>`
+:
+'—'
+}
+
+</td>
+
+
+<td>
+
+<b>
+${esc(x.name)}
+</b>
+
+</td>
+
+
+<td>
+
+<span class="badge">
+${esc(x.category)}
+</span>
+
+</td>
+
+
+<td>
+
+<span class="qtyBadge">
+${soldQty(x)}
+</span>
+
+</td>
+
+
+<td>
+
+${
+x.category==='SLAB'
+?
+esc(x.slabCompany||'PSA')
+:
+'—'
+}
+
+</td>
+
+
+<td>
+${formatDate(x.buyDate)}
+</td>
+
+
+<td>
+
+${money(
+soldQty(x)*num(x.buyPrice)
+)}
+
+</td>
+
+
+<td>
+${formatDate(x.sellDate)}
+</td>
+
+
+<td>
+
+${money(x.sellPrice)}
+
+</td>
+
+
+<td>
+
+${money(extra(x))}
+
+</td>
+
+
+<td
+class="${net(x)>=0?'positive':'negative'}"
+>
+
+${money(net(x))}
+
+</td>
+
+
+<td>
+
+<div class="actions">
+
+<button
+onclick="editItem('${x.id}')"
+>
+编辑
+</button>
+
+<button
+onclick="delItem('${x.id}')"
+>
+删除
+</button>
+
+</div>
+
+</td>
+
+</tr>
+
+`;
+
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+function renderSide(){
+
+$('catList').innerHTML=
+
+`
+
+<div
+class="catItem
+${selectedCat==='all'?'active':''}"
+onclick="filterCat('all')"
+>
+
+<span>
+全部分类
+</span>
+
+<em>
+${items.reduce(
+(a,x)=>a+qty(x),
+0
+)}
+</em>
+
+</div>
+
+`
+
++
+
+cats.map(c=>
+
+`
+
+<div
+class="catItem
+${selectedCat===c?'active':''}"
+onclick="filterCat('${esc(c)}')"
+>
+
+<span>
+
+${esc(c)}
+
+${
+c==='SLAB'
+?
+`
+<small
+style="
+display:block;
+color:#667389;
+font-size:9px
+"
+>
+PSA · CGC · CCIC · TAG · BGS
+</small>
+`
+:
+''
+}
+
+</span>
+
+<em>
+
+${items
+.filter(
+x=>x.category===c
+)
+.reduce(
+(a,x)=>a+remainingQty(x),
+0
+)}
+
+</em>
+
+</div>
+
+`
+
+).join('');
+
+
+$('sideSearch').value=query;
+
+if($('mobileSearch')){
+$('mobileSearch').value=query;
+}
+
+}
+
+
+function filterCat(c){
+
+selectedCat=c;
+
+render();
+
+}
+
+
+function syncSearch(v){
+
+query=v;
+
+render();
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function go(id,btn){
+
+$(id).scrollIntoView({
+behavior:'smooth',
+block:'start'
+});
+
+
+document
+.querySelectorAll(
+'.nav button,.mobileNav button'
+)
+.forEach(
+x=>x.classList.remove('active')
+);
+
+
+if(btn){
+
+btn.classList.add('active');
+
+}
+
+
+$('sidebar')
+.classList.remove('mobileOpen');
+
+}
+
+
+function toggleMenu(){
+
+$('sidebar')
+.classList.toggle('mobileOpen');
+
+}
+
+
+/* =========================================================
+   ADD
+========================================================= */
+
+function openAdd(){
+
+editId=null;
+
+imageData='';
+
+$('form').reset();
+
+$('modalTitle').textContent=
+'新增资产';
+
+
+$('quantity').value=1;
+
+$('soldQuantity').value=0;
+
+$('fees').value=0;
+
+$('shipping').value=0;
+
+
+if(cats.includes('SLAB')){
+
+$('category').value='SLAB';
+
+}
+
+
+$('slabCompany').value='PSA';
+
+toggleSlabCompany();
+
+$('preview').hidden=true;
+
+$('editModal')
+.classList.add('show');
+
+}
+
+
+/* =========================================================
+   EDIT
+========================================================= */
+
+function editItem(id){
+
+let x=
+items.find(
+a=>a.id==id
+);
+
+if(!x)return;
+
+editId=id;
+
+
+$('name').value=x.name;
+
+$('code').value=x.code||'';
+
+$('grade').value=x.grade||'';
+
+$('serial').value=x.serial||'';
+
+$('quantity').value=
+qty(x);
+
+$('soldQuantity').value=
+soldQty(x);
+
+$('buyDate').value=
+x.buyDate||'';
+
+$('buyPrice').value=
+x.buyPrice||0;
+
+$('market').value=
+x.market||0;
+
+$('sellDate').value=
+x.sellDate||'';
+
+$('sellPrice').value=
+x.sellPrice??'';
+
+$('fees').value=
+x.fees||0;
+
+$('shipping').value=
+x.shipping||0;
+
+$('note').value=
+x.note||'';
+
+
+$('category').value=
+x.category==='PSA Slab'
+?'SLAB'
+:x.category;
+
+
+$('slabCompany').value=
+x.slabCompany||'PSA';
+
+
+toggleSlabCompany();
+
+
+imageData=x.image||'';
+
+$('preview').src=imageData;
+
+$('preview').hidden=
+!imageData;
+
+
+$('modalTitle').textContent=
+'编辑资产';
+
+$('editModal')
+.classList.add('show');
+
+}
+
+
+/* =========================================================
+   SELL
+========================================================= */
+
+function sellItem(id){
+
+let x=
+items.find(
+a=>a.id==id
+);
+
+if(!x)return;
+
+editItem(id);
+
+
+setTimeout(()=>{
+
+let remaining=
+remainingQty(x);
+
+$('soldQuantity').value=
+remaining;
+
+$('sellDate').value=
+new Date()
+.toISOString()
+.slice(0,10);
+
+$('sellPrice').focus();
+
+},100);
+
+}
+
+
+/* =========================================================
+   SAVE
+========================================================= */
+
 async function saveItem(e){
- e.preventDefault();if(!currentUser)return;
- let x={id:editId||crypto.randomUUID(),category:$('category').value,slabCompany:$('category').value==='SLAB'?$('slabCompany').value:'',name:$('name').value.trim(),code:$('code').value.trim(),grade:$('grade').value.trim(),serial:$('serial').value.trim(),buyDate:$('buyDate').value,buyPrice:Number($('buyPrice').value||0),market:Number($('market').value||0),sellDate:$('sellDate').value,sellPrice:$('sellPrice').value===''?null:Number($('sellPrice').value),fees:Number($('fees').value||0),shipping:Number($('shipping').value||0),note:$('note').value.trim(),image:imageData};
- let {error}=await sb.from('cards').upsert(toDb(x),{onConflict:'id'});if(error){alert('保存失败：'+error.message);return}
- if(editId)items=items.map(a=>a.id==editId?x:a);else items.unshift(x);save();closeModal();render()
+
+e.preventDefault();
+
+if(!currentUser){
+alert('请先登录');
+
+return;
 }
-function closeModal(){$('editModal').classList.remove('show')}
-function previewImage(inp){let f=inp.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{let img=new Image();img.onload=()=>{let max=1200,scale=Math.min(1,max/img.width),c=document.createElement('canvas');c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);c.getContext('2d').drawImage(img,0,0,c.width,c.height);imageData=c.toDataURL('image/jpeg',0.82);$('preview').src=imageData;$('preview').hidden=false};img.src=r.result};r.readAsDataURL(f)}
-async function delItem(id){if(!confirm('确定删除这条资料？'))return;let {error}=await sb.from('cards').delete().eq('id',id);if(error){alert('删除失败：'+error.message);return}items=items.filter(x=>x.id!=id);save();render()}
-function openCategory(){renderCatManage();$('catModal').classList.add('show')}
-function closeCategory(){$('catModal').classList.remove('show')}
-function renderCatManage(){$('catManage').innerHTML=cats.map(c=>{let n=items.filter(x=>x.category===c).length;return `<div style="display:flex;justify-content:space-between;align-items:center;background:#0c131d;border:1px solid #273447;border-radius:9px;padding:10px;margin:6px 0"><span><b>${esc(c)}</b> <small style="color:#778399">${n} 项</small></span>${n===0&&cats.length>1?`<button class="btn" onclick="deleteCat('${esc(c)}')">删除</button>`:''}</div>`}).join('')}
-async function addCategory(){let n=$('newCat').value.trim();if(!n)return;if(cats.some(c=>c.toLowerCase()===n.toLowerCase()))return alert('分类已经存在');let {error}=await sb.from('categories').insert({name:n,sort_order:cats.length});if(error){alert('新增分类失败：'+error.message);return}cats.push(n);saveCats();$('newCat').value='';renderCatManage();render()}
-async function deleteCat(c){if(items.some(x=>x.category===c))return alert('该分类还有资料，不能删除');let {error}=await sb.from('categories').delete().eq('name',c);if(error){alert('删除分类失败：'+error.message);return}cats=cats.filter(x=>x!==c);saveCats();renderCatManage();render()}
-function exportData(){let data={version:14,exportedAt:new Date().toISOString(),categories:cats,items};let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pokevault-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-async function importData(inp){let f=inp.files[0];if(!f)return;let r=new FileReader();r.onload=async()=>{try{let d=JSON.parse(r.result);if(!Array.isArray(d.items))throw Error('没有 items');for(const c of (d.categories||[])){if(!cats.includes(c))await sb.from('categories').insert({name:c,sort_order:cats.length})}for(const raw of d.items){let x={...raw,id:raw.id||crypto.randomUUID()};await sb.from('cards').upsert(toDb(x),{onConflict:'id'})}await loadCloud();alert('恢复成功')}catch(e){alert('备份文件格式不正确或云端恢复失败：'+e.message)}};r.readAsText(f)}
-renderSlabCompanies();initAuth();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
+
+
+let totalQty=
+Math.max(
+1,
+parseInt(
+$('quantity').value||1,
+10
+)
+);
+
+
+let soldQ=
+Math.max(
+0,
+parseInt(
+$('soldQuantity').value||0,
+10
+)
+);
+
+
+if(soldQ>totalQty){
+
+alert(
+'卖出数量不能超过总数量'
+);
+
+return;
+
+}
+
+
+/*
+卖出数量 > 0 时必须有卖出日期和卖出价格
+*/
+
+if(soldQ>0){
+
+if(!$('sellDate').value){
+
+alert(
+'请填写卖出日期'
+);
+
+return;
+
+}
+
+if(
+$('sellPrice').value==='' ||
+Number($('sellPrice').value)<0
+){
+
+alert(
+'请填写卖出总价'
+);
+
+return;
+
+}
+
+}
+
+
+let x={
+
+id:
+editId||
+crypto.randomUUID(),
+
+category:
+$('category').value,
+
+slabCompany:
+$('category').value==='SLAB'
+?
+$('slabCompany').value
+:
+'',
+
+name:
+$('name').value.trim(),
+
+code:
+$('code').value.trim(),
+
+grade:
+$('grade').value.trim(),
+
+serial:
+$('serial').value.trim(),
+
+quantity:
+totalQty,
+
+soldQuantity:
+soldQ,
+
+buyDate:
+$('buyDate').value,
+
+buyPrice:
+num($('buyPrice').value),
+
+market:
+num($('market').value),
+
+sellDate:
+$('sellDate').value,
+
+sellPrice:
+$('sellPrice').value===''
+?
+null
+:
+num($('sellPrice').value),
+
+fees:
+num($('fees').value),
+
+shipping:
+num($('shipping').value),
+
+note:
+$('note').value.trim(),
+
+image:
+imageData
+
+};
+
+
+let {
+error
+}=
+await sb
+.from('cards')
+.upsert(
+toDb(x),
+{
+onConflict:'id'
+}
+);
+
+
+if(error){
+
+console.error(error);
+
+alert(
+'保存失败：'+error.message
+);
+
+return;
+
+}
+
+
+if(editId){
+
+items=
+items.map(
+a=>a.id==editId
+?
+x
+:
+a
+);
+
+}else{
+
+items.unshift(x);
+
+}
+
+
+save();
+
+closeModal();
+
+render();
+
+}
+
+
+/* =========================================================
+   CLOSE
+========================================================= */
+
+function closeModal(){
+
+$('editModal')
+.classList.remove('show');
+
+}
+
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+function previewImage(inp){
+
+let f=inp.files[0];
+
+if(!f)return;
+
+
+let r=new FileReader();
+
+
+r.onload=()=>{
+
+let img=new Image();
+
+
+img.onload=()=>{
+
+let max=1200;
+
+let scale=
+Math.min(
+1,
+max/img.width
+);
+
+
+let c=
+document.createElement('canvas');
+
+
+c.width=
+Math.round(
+img.width*scale
+);
+
+c.height=
+Math.round(
+img.height*scale
+);
+
+
+c.getContext('2d')
+.drawImage(
+img,
+0,
+0,
+c.width,
+c.height
+);
+
+
+imageData=
+c.toDataURL(
+'image/jpeg',
+0.82
+);
+
+
+$('preview').src=
+imageData;
+
+$('preview').hidden=false;
+
+};
+
+
+img.src=r.result;
+
+};
+
+
+r.readAsDataURL(f);
+
+}
+
+
+/* =========================================================
+   DELETE
+========================================================= */
+
+async function delItem(id){
+
+if(
+!confirm(
+'确定删除这条资料？'
+)
+){
+return;
+}
+
+
+let {
+error
+}=
+await sb
+.from('cards')
+.delete()
+.eq('id',id);
+
+
+if(error){
+
+alert(
+'删除失败：'+error.message
+);
+
+return;
+
+}
+
+
+items=
+items.filter(
+x=>x.id!=id
+);
+
+save();
+
+render();
+
+}
+
+
+/* =========================================================
+   CATEGORY
+========================================================= */
+
+function openCategory(){
+
+renderCatManage();
+
+$('catModal')
+.classList.add('show');
+
+}
+
+
+function closeCategory(){
+
+$('catModal')
+.classList.remove('show');
+
+}
+
+
+function renderCatManage(){
+
+$('catManage').innerHTML=
+
+cats.map(c=>{
+
+let n=
+items
+.filter(
+x=>x.category===c
+)
+.reduce(
+(a,x)=>a+qty(x),
+0
+);
+
+
+return `
+
+<div
+style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#0c131d;
+border:1px solid #273447;
+border-radius:9px;
+padding:10px;
+margin:6px 0
+"
+>
+
+<span>
+
+<b>
+${esc(c)}
+</b>
+
+<small
+style="color:#778399"
+>
+${n} 件
+</small>
+
+</span>
+
+${
+n===0 &&
+cats.length>1
+?
+`
+<button
+class="btn"
+onclick="deleteCat('${esc(c)}')"
+>
+删除
+</button>
+`
+:
+''
+}
+
+</div>
+
+`;
+
+}).join('');
+
+}
+
+
+async function addCategory(){
+
+let n=
+$('newCat')
+.value
+.trim();
+
+
+if(!n)return;
+
+
+if(
+cats.some(
+c=>
+c.toLowerCase()===
+n.toLowerCase()
+)
+){
+
+alert(
+'分类已经存在'
+);
+
+return;
+
+}
+
+
+let {
+error
+}=
+await sb
+.from('categories')
+.insert({
+name:n,
+sort_order:cats.length
+});
+
+
+if(error){
+
+alert(
+'新增分类失败：'+error.message
+);
+
+return;
+
+}
+
+
+cats.push(n);
+
+saveCats();
+
+$('newCat').value='';
+
+renderCatManage();
+
+render();
+
+}
+
+
+async function deleteCat(c){
+
+if(
+items.some(
+x=>x.category===c
+)
+){
+
+alert(
+'该分类还有资料，不能删除'
+);
+
+return;
+
+}
+
+
+let {
+error
+}=
+await sb
+.from('categories')
+.delete()
+.eq('name',c);
+
+
+if(error){
+
+alert(
+'删除分类失败：'+error.message
+);
+
+return;
+
+}
+
+
+cats=
+cats.filter(
+x=>x!==c
+);
+
+saveCats();
+
+renderCatManage();
+
+render();
+
+}
+
+
+/* =========================================================
+   BACKUP
+========================================================= */
+
+function exportData(){
+
+let data={
+
+version:15,
+
+exportedAt:
+new Date().toISOString(),
+
+categories:
+cats,
+
+items:items
+
+};
+
+
+let blob=
+new Blob(
+[
+JSON.stringify(
+data,
+null,
+2
+)
+],
+{
+type:'application/json'
+}
+);
+
+
+let a=
+document.createElement('a');
+
+
+a.href=
+URL.createObjectURL(blob);
+
+a.download=
+'pokevault-backup.json';
+
+a.click();
+
+
+setTimeout(
+()=>
+URL.revokeObjectURL(a.href),
+1000
+);
+
+}
+
+
+/* =========================================================
+   IMPORT
+========================================================= */
+
+async function importData(inp){
+
+let f=inp.files[0];
+
+if(!f)return;
+
+
+let r=new FileReader();
+
+
+r.onload=async()=>{
+
+try{
+
+let d=
+JSON.parse(
+r.result
+);
+
+
+if(
+!Array.isArray(
+d.items
+)
+){
+
+throw Error(
+'备份文件没有 items'
+);
+
+}
+
+
+for(
+const c of
+(d.categories||[])
+){
+
+if(
+!cats.includes(c)
+){
+
+await sb
+.from('categories')
+.insert({
+
+name:c,
+
+sort_order:
+cats.length
+
+});
+
+}
+
+}
+
+
+for(
+const raw of d.items
+){
+
+let x={
+
+...raw,
+
+id:
+raw.id||
+crypto.randomUUID(),
+
+quantity:
+raw.quantity||
+1,
+
+soldQuantity:
+raw.soldQuantity||
+0
+
+};
+
+
+await sb
+.from('cards')
+.upsert(
+toDb(x),
+{
+onConflict:'id'
+}
+);
+
+}
+
+
+await loadCloud();
+
+
+alert(
+'恢复成功'
+);
+
+
+}catch(e){
+
+alert(
+'备份文件格式不正确或云端恢复失败：'
++
+e.message
+);
+
+}
+
+};
+
+
+r.readAsText(f);
+
+}
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+renderSlabCompanies();
+
+initAuth();
+
 </script>
+
+
+<!-- ================= MOBILE NAV ================= -->
+
+<script>
+
+if(
+"serviceWorker"
+in navigator
+){
+
+navigator.serviceWorker
+.register(
+"./sw.js?v=15"
+)
+.catch(
+err=>
+console.log(
+'Service Worker:',
+err
+)
+);
+
+}
+
+</script>
+
+
 </body>
+
 </html>
