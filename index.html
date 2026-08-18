@@ -3401,7 +3401,7 @@ $('editModal')
    EDIT
 ========================================================= */
 
-function editItem(id){
+async function editItem(id){
 
 let x=
 items.find(
@@ -3409,6 +3409,36 @@ a=>a.id==id
 );
 
 if(!x)return;
+
+
+/*
+=========================================================
+如果目前没有照片，
+打开编辑时才从 Supabase 读取这一张照片
+=========================================================
+*/
+
+if(!x.image){
+
+const {
+data,
+error
+}=await sb
+.from('cards')
+.select('image')
+.eq('id',id)
+.eq('user_id',currentUser.id)
+.single();
+
+
+if(!error && data){
+
+x.image=data.image||'';
+
+}
+
+}
+
 
 editId=id;
 
@@ -3421,32 +3451,42 @@ $('grade').value=x.grade||'';
 
 $('serial').value=x.serial||'';
 
+
 $('quantity').value=
 qty(x);
+
 
 $('soldQuantity').value=
 soldQty(x);
 
+
 $('buyDate').value=
 x.buyDate||'';
+
 
 $('buyPrice').value=
 x.buyPrice||0;
 
+
 $('market').value=
 x.market||0;
+
 
 $('sellDate').value=
 x.sellDate||'';
 
+
 $('sellPrice').value=
 x.sellPrice??'';
+
 
 $('fees').value=
 x.fees||0;
 
+
 $('shipping').value=
 x.shipping||0;
+
 
 $('note').value=
 x.note||'';
@@ -3465,7 +3505,15 @@ x.slabCompany||'PSA';
 toggleSlabCompany();
 
 
+/*
+=========================================================
+保存这张卡的照片到当前 items
+避免编辑后照片被清空
+=========================================================
+*/
+
 imageData=x.image||'';
+
 
 $('preview').src=imageData;
 
@@ -3476,44 +3524,9 @@ $('preview').hidden=
 $('modalTitle').textContent=
 '编辑资产';
 
+
 $('editModal')
 .classList.add('show');
-
-}
-
-
-/* =========================================================
-   SELL
-========================================================= */
-
-function sellItem(id){
-
-let x=
-items.find(
-a=>a.id==id
-);
-
-if(!x)return;
-
-editItem(id);
-
-
-setTimeout(()=>{
-
-let remaining=
-remainingQty(x);
-
-$('soldQuantity').value=
-remaining;
-
-$('sellDate').value=
-new Date()
-.toISOString()
-.slice(0,10);
-
-$('sellPrice').focus();
-
-},100);
 
 }
 
