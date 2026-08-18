@@ -2251,16 +2251,156 @@ if(!currentUser){
 return;
 }
 
+console.log('当前登录用户:', currentUser.id);
+console.log('开始读取云端资料...');
+
+/*
+=========================================================
+重要：
+这里故意不读取 image
+
+因为 image 里面存的是 Base64 照片。
+如果一次 select * 把所有照片一起拿下来，
+卡片多的时候非常容易导致网页卡死。
+=========================================================
+*/
+
 const {
 data,
 error
 }=await sb
 .from('cards')
-.select('*')
+.select(`
+id,
+user_id,
+category,
+slab_company,
+name,
+code,
+grade,
+serial,
+buy_date,
+buy_price,
+market,
+sell_date,
+sell_price,
+fees,
+shipping,
+note,
+quantity,
+sold_quantity,
+is_sold,
+created_at,
+updated_at
+`)
+.eq('user_id',currentUser.id)
 .order('created_at',{
 ascending:false
 });
 
+
+if(error){
+
+console.error('读取 cards 失败:',error);
+
+alert(
+'数据库读取失败：\n'+error.message
+);
+
+return;
+
+}
+
+
+console.log(
+'云端读取成功，共',
+(data||[]).length,
+'条资料'
+);
+
+
+/*
+=========================================================
+把云端资料放进 items
+=========================================================
+*/
+
+items=(data||[]).map(fromDb);
+
+
+/*
+=========================================================
+只有真的成功读取之后才更新 localStorage
+=========================================================
+*/
+
+localStorage.setItem(
+KEY,
+JSON.stringify(items)
+);
+
+
+/*
+=========================================================
+读取分类
+=========================================================
+*/
+
+const {
+data:cd,
+error:ce
+}=await sb
+.from('categories')
+.select('name')
+.order('sort_order',{
+ascending:true
+});
+
+
+if(!ce && cd && cd.length){
+
+cats=[
+...new Set(
+cd
+.map(x=>x.name)
+.filter(Boolean)
+)
+];
+
+}
+
+
+/*
+=========================================================
+把资料里面出现过的分类也加入
+=========================================================
+*/
+
+cats=[
+...new Set([
+...cats,
+...items
+.map(x=>x.category)
+.filter(Boolean)
+])
+];
+
+
+localStorage.setItem(
+CATKEY,
+JSON.stringify(cats)
+);
+
+
+/*
+=========================================================
+显示
+=========================================================
+*/
+
+render();
+
+}
 
 if(error){
 
